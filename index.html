@@ -546,19 +546,19 @@ async function submitAll() {
   btn.disabled = true;
   btn.textContent = `저장 중... (0/${addedEntries.length})`;
 
-  const today = new Date().toLocaleDateString('ko-KR');
+  const today = formatDateKey(new Date());
   let saved = 0;
 
   for (const entry of addedEntries) {
     const record = {
-      type: 'log',
-      studentNo: currentUser.no,
+      date:      today,
       name:      currentUser.name,
       subjects:  entry.name,
       hours:     entry.hours,
       memo:      entry.memo,
       understanding: entry.star,
-      date: today
+      studentNo: currentUser.no,
+      type:      'log'
     };
     if (SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
       try { await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', body: JSON.stringify(record) }); } catch(e) {}
@@ -665,6 +665,13 @@ function showToast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg; el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function formatDateKey(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 </script>
 </body>
