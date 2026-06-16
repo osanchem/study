@@ -16,104 +16,119 @@
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   body { font-family:'Pretendard','Apple SD Gothic Neo',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  button, input, select { font:inherit; }
 
-  /* 잠금 화면 */
   .lock-screen { position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:999; }
-  .lock-box { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:32px 24px; width:320px; text-align:center; }
+  .lock-box { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:32px 24px; width:min(320px, calc(100vw - 32px)); text-align:center; }
   .lock-icon { font-size:40px; margin-bottom:12px; }
   .lock-title { font-size:16px; font-weight:600; margin-bottom:4px; }
   .lock-sub { font-size:13px; color:var(--muted); margin-bottom:20px; }
-  .lock-input { width:100%; padding:11px 14px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:15px; text-align:center; letter-spacing:4px; font-family:inherit; outline:none; margin-bottom:10px; }
+  .lock-input { width:100%; padding:11px 14px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:15px; text-align:center; letter-spacing:4px; outline:none; margin-bottom:10px; }
   .lock-input:focus { border-color:var(--blue-m); }
-  .lock-btn { width:100%; padding:11px; background:var(--blue); color:#fff; border:none; border-radius:var(--radius-sm); font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; }
+  .lock-btn { width:100%; padding:11px; background:var(--blue); color:#fff; border:none; border-radius:var(--radius-sm); font-size:14px; font-weight:600; cursor:pointer; }
   .lock-btn:hover { background:#0C447C; }
   .lock-error { font-size:12px; color:var(--red); margin-top:8px; display:none; }
 
-  /* 앱 본체 */
   .app-body { display:none; }
-  .header { background:var(--surface); border-bottom:1px solid var(--border); padding:14px 16px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
+  .header { background:var(--surface); border-bottom:1px solid var(--border); padding:14px 16px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; gap:12px; }
   .header-title { font-size:16px; font-weight:600; }
   .header-sub { font-size:12px; color:var(--muted); margin-top:2px; }
-  .header-right { display:flex; align-items:center; gap:8px; }
-  .dday-badge { background:var(--red-l); color:var(--red); font-size:12px; font-weight:600; padding:4px 10px; border-radius:20px; }
-  .logout-btn { font-size:12px; color:var(--muted); background:none; border:1px solid var(--border); border-radius:var(--radius-sm); padding:4px 10px; cursor:pointer; font-family:inherit; }
+  .header-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+  .dday-badge { background:var(--red-l); color:var(--red); font-size:12px; font-weight:600; padding:4px 10px; border-radius:20px; white-space:nowrap; }
+  .logout-btn { font-size:12px; color:var(--muted); background:none; border:1px solid var(--border); border-radius:var(--radius-sm); padding:4px 10px; cursor:pointer; white-space:nowrap; }
   .tab-wrap { background:var(--surface); border-bottom:1px solid var(--border); display:flex; overflow-x:auto; }
-  .tab-btn { flex:1; min-width:80px; padding:12px 8px; border:none; background:none; font-size:12px; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; transition:all .15s; font-family:inherit; }
+  .tab-btn { flex:1; min-width:128px; padding:12px 8px; border:none; background:none; font-size:13px; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; transition:all .15s; }
   .tab-btn.active { color:var(--blue); border-bottom-color:var(--blue); font-weight:600; }
-  .content { max-width:560px; margin:0 auto; padding:16px; }
+  .content { max-width:640px; margin:0 auto; padding:16px; }
   .tab-panel { display:none; }
   .tab-panel.active { display:block; }
   .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:12px; }
-  .card-title { font-size:14px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
-  .form-control { width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:14px; background:var(--surface); color:var(--text); font-family:inherit; outline:none; }
-  .form-control:focus { border-color:var(--blue-m); }
-  .btn { padding:11px 16px; border:none; border-radius:var(--radius-sm); font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; transition:all .15s; width:100%; }
+  .card-title { font-size:14px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .btn { padding:11px 16px; border:none; border-radius:var(--radius-sm); font-size:14px; font-weight:600; cursor:pointer; transition:all .15s; width:100%; }
   .btn-primary { background:var(--blue); color:#fff; }
   .btn-primary:hover { background:#0C447C; }
-  .btn-icon { background:none; border:1px solid var(--border); border-radius:var(--radius-sm); padding:5px 8px; cursor:pointer; font-size:14px; color:var(--muted); transition:all .15s; }
-  .btn-icon:hover { background:var(--bg); }
-  .btn-icon.danger:hover { color:var(--red); border-color:var(--red-l); background:var(--red-l); }
-  .btn-icon.confirm:hover { color:var(--green-d); border-color:var(--green-l); background:var(--green-l); }
+  .student-link { display:block; text-align:center; padding:12px; background:var(--green-l); border:1px solid #9FD57A; border-radius:var(--radius-sm); font-size:13px; color:var(--green-d); font-weight:600; text-decoration:none; margin-bottom:12px; }
+  .student-link:hover { background:#d5edbb; }
+
   .metric-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
-  .metric { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:12px; text-align:center; }
-  .metric-label { font-size:11px; color:var(--muted); margin-bottom:4px; }
-  .metric-val { font-size:22px; font-weight:700; }
+  .metric { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:12px; text-align:center; min-width:0; }
+  .metric-label { font-size:11px; color:var(--muted); margin-bottom:4px; white-space:nowrap; }
+  .metric-val { font-size:22px; font-weight:700; line-height:1.15; overflow-wrap:anywhere; }
   .metric-unit { font-size:11px; color:var(--muted); }
-  .bar-row { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
-  .bar-label { font-size:12px; color:var(--muted); width:65px; text-align:right; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  .bar-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .bar-row:last-child { margin-bottom:0; }
+  .bar-label { font-size:12px; color:var(--muted); width:72px; text-align:right; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .bar-track { flex:1; height:8px; background:var(--bg); border-radius:4px; overflow:hidden; }
   .bar-fill { height:100%; border-radius:4px; transition:width .5s; }
-  .bar-val { font-size:11px; color:var(--muted); width:38px; text-align:right; }
-  .stu-row { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px; }
+  .bar-val { font-size:11px; color:var(--muted); width:44px; text-align:right; }
+
+  .stu-row { display:flex; align-items:center; gap:8px; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px; }
   .stu-row:last-child { border-bottom:none; }
-  .stu-name { width:68px; font-weight:600; flex-shrink:0; }
-  .stu-bar { flex:1; height:6px; background:var(--bg); border-radius:3px; overflow:hidden; }
-  .stu-bar-fill { height:100%; border-radius:3px; background:var(--blue-m); }
-  .stu-hours { width:42px; text-align:right; color:var(--muted); font-size:12px; }
   .stu-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-  .badge { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; }
-  .subj-row { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--border); }
-  .subj-row:last-child { border-bottom:none; }
-  .subj-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-  .subj-name { flex:1; font-size:14px; }
-  .subj-input { flex:1; padding:5px 8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:13px; font-family:inherit; background:var(--surface); color:var(--text); outline:none; }
-  .subj-input:focus { border-color:var(--blue-m); }
-  .add-row { display:flex; gap:8px; margin-top:10px; }
-  .add-input { flex:1; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:13px; font-family:inherit; background:var(--surface); color:var(--text); outline:none; }
-  .add-input:focus { border-color:var(--blue-m); }
-  .add-btn { padding:9px 14px; background:var(--blue); color:#fff; border:none; border-radius:var(--radius-sm); font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; font-family:inherit; }
-  .add-btn:hover { background:#0C447C; }
-  .subject-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
-  .chip-preview { padding:7px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:13px; text-align:center; color:var(--muted); }
-  .info-box { background:var(--blue-l); border-radius:var(--radius-sm); padding:10px 12px; font-size:12px; color:#185FA5; line-height:1.6; margin-top:10px; }
-  .info-box code { background:rgba(24,95,165,.15); padding:1px 5px; border-radius:3px; font-family:monospace; }
+  .stu-name { width:72px; font-weight:600; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .stu-bar { flex:1; height:6px; background:var(--bg); border-radius:3px; overflow:hidden; min-width:50px; }
+  .stu-bar-fill { height:100%; border-radius:3px; background:var(--blue-m); }
+  .stu-hours { width:46px; text-align:right; color:var(--muted); font-size:12px; }
+  .badge { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; white-space:nowrap; }
+
+  .toolbar { display:flex; gap:8px; margin-bottom:12px; }
+  .search-input { width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:14px; color:var(--text); background:var(--surface); outline:none; }
+  .search-input:focus { border-color:var(--blue-m); }
+  .student-list { display:flex; flex-direction:column; gap:6px; max-height:300px; overflow:auto; }
+  .student-card { width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface); color:var(--text); cursor:pointer; text-align:left; transition:all .15s; }
+  .student-card:hover { border-color:var(--blue-m); background:var(--blue-l); }
+  .student-card.active { border-color:var(--blue); background:var(--blue-l); box-shadow:inset 3px 0 0 var(--blue); }
+  .student-card-main { display:flex; align-items:center; gap:8px; min-width:0; }
+  .student-card-name { font-size:14px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .student-card-meta { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); flex-shrink:0; }
+  .status-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .status-pill { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:700; padding:5px 9px; border-radius:14px; white-space:nowrap; }
+  .status-pill.done { background:var(--green-l); color:var(--green-d); }
+  .status-pill.missing { background:var(--red-l); color:var(--red); }
+
+  .detail-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px; }
+  .detail-label { font-size:11px; color:var(--muted); margin-bottom:2px; }
+  .detail-name { font-size:20px; font-weight:800; line-height:1.2; }
+  .detail-note { background:var(--blue-l); border-radius:var(--radius-sm); color:#0C447C; font-size:12px; line-height:1.6; padding:10px 12px; margin:2px 0 14px; }
+  .mini-title { font-size:13px; font-weight:700; margin:16px 0 8px; color:var(--text); }
+  .trend { height:118px; display:grid; grid-template-columns:repeat(7,1fr); gap:8px; align-items:end; padding-top:8px; }
+  .trend-col { display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; min-width:0; }
+  .trend-bar-wrap { flex:1; width:100%; display:flex; align-items:end; justify-content:center; }
+  .trend-bar { width:18px; min-height:3px; border-radius:9px 9px 3px 3px; background:var(--blue-m); transition:height .5s; }
+  .trend-date { font-size:11px; color:var(--muted); }
+  .empty-state { color:var(--muted); font-size:13px; text-align:center; padding:20px 8px; line-height:1.6; }
   .loading { color:var(--muted); font-size:13px; text-align:center; padding:20px; }
   .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#1a1a18; color:#fff; font-size:13px; padding:10px 20px; border-radius:20px; opacity:0; transition:opacity .3s; pointer-events:none; z-index:200; white-space:nowrap; }
   .toast.show { opacity:1; }
-  .student-link { display:block; text-align:center; padding:12px; background:var(--green-l); border:1px solid #9FD57A; border-radius:var(--radius-sm); font-size:13px; color:var(--green-d); font-weight:600; text-decoration:none; margin-bottom:12px; }
-  .student-link:hover { background:#d5edbb; }
+
+  @media (max-width:520px) {
+    .content { padding:12px; }
+    .metric-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
+    .metric { padding:10px 6px; }
+    .metric-label { font-size:10px; }
+    .metric-val { font-size:20px; }
+    .stu-row { gap:6px; }
+    .stu-name { width:58px; }
+    .badge { display:none; }
+    .bar-label { width:58px; }
+    .detail-head { flex-direction:column; }
+  }
 </style>
 </head>
 <body>
 
-<!-- 잠금 화면 -->
 <div class="lock-screen" id="lock-screen">
   <div class="lock-box">
     <div class="lock-icon">🔒</div>
     <div class="lock-title">교사 전용 페이지</div>
     <div class="lock-sub">비밀번호를 입력해주세요</div>
-    <input class="lock-input" type="password" id="pw-input" placeholder="••••" maxlength="8"
-      onkeydown="if(event.key==='Enter') checkPassword()">
+    <input class="lock-input" type="password" id="pw-input" placeholder="••••" maxlength="8">
     <button class="lock-btn" onclick="checkPassword()">입장하기</button>
     <div class="lock-error" id="lock-error">비밀번호가 틀렸습니다</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6">
-      기본 비밀번호: <code style="font-family:monospace;background:var(--bg);padding:1px 5px;border-radius:3px">1234</code><br>
-      teacher.html 상단 TEACHER_PW에서 변경하세요
-    </div>
   </div>
 </div>
 
-<!-- 앱 본체 -->
 <div class="app-body" id="app-body">
   <div class="header">
     <div>
@@ -127,17 +142,14 @@
   </div>
 
   <div class="tab-wrap">
-    <button class="tab-btn active" data-tab="dashboard">📊 대시보드</button>
-    <button class="tab-btn" data-tab="subjects">⚙️ 과목 관리</button>
-    <button class="tab-btn" data-tab="students">🧑‍🎓 학생 관리</button>
+    <button class="tab-btn active" data-tab="overview">📊 전체 현황</button>
+    <button class="tab-btn" data-tab="individual">🧑‍🎓 학생 개별 현황</button>
   </div>
 
   <div class="content">
-
-    <!-- 탭 1: 대시보드 -->
-    <div class="tab-panel active" id="panel-dashboard">
-      <a class="student-link" href="student.html" target="_blank">
-        🔗 학생용 링크: student.html (클릭해서 확인)
+    <div class="tab-panel active" id="panel-overview">
+      <a class="student-link" href="index.html" target="_blank">
+        🔗 학생용 페이지 열기
       </a>
       <div class="metric-grid">
         <div class="metric"><div class="metric-label">오늘 입력 완료</div><div class="metric-val" id="t-submitted" style="color:var(--green-d)">--</div><div class="metric-unit">명</div></div>
@@ -145,78 +157,59 @@
         <div class="metric"><div class="metric-label">오늘 평균</div><div class="metric-val" id="t-avg">--</div><div class="metric-unit">h</div></div>
       </div>
       <div class="card">
-        <div class="card-title">🧑‍🎓 학생별 누적 학습</div>
-        <div id="teacher-students"><div class="loading">데이터 불러오는 중...</div></div>
+        <div class="card-title">학생별 누적 학습</div>
+        <div id="overview-students"><div class="loading">데이터 불러오는 중...</div></div>
       </div>
       <div class="card">
-        <div class="card-title">📊 과목별 학습 비율</div>
-        <div id="teacher-subjects"><div class="loading">데이터 불러오는 중...</div></div>
+        <div class="card-title">과목별 학습 비율</div>
+        <div id="overview-subjects"><div class="loading">데이터 불러오는 중...</div></div>
       </div>
       <div class="card">
-        <div class="card-title">⚠️ 오늘 미입력 학생</div>
-        <div id="teacher-missing" style="font-size:13px;color:var(--muted)"></div>
+        <div class="card-title">오늘 미입력 학생</div>
+        <div id="overview-missing" style="font-size:13px;color:var(--muted);line-height:1.6"></div>
       </div>
-      <button class="btn btn-primary" onclick="loadDashboard()">🔄 새로고침</button>
+      <button class="btn btn-primary" onclick="loadDashboard()">새로고침</button>
     </div>
 
-    <!-- 탭 2: 과목 관리 -->
-    <div class="tab-panel" id="panel-subjects">
+    <div class="tab-panel" id="panel-individual">
       <div class="card">
-        <div class="card-title">⚙️ 과목 관리</div>
-        <div id="subj-list"><div class="loading">불러오는 중...</div></div>
-        <div class="add-row">
-          <input class="add-input" id="new-subj" placeholder="새 과목 이름" maxlength="10">
-          <button class="add-btn" id="add-subj-btn">+ 추가</button>
+        <div class="card-title">학생 선택</div>
+        <div class="toolbar">
+          <input class="search-input" id="student-search" placeholder="이름으로 검색" autocomplete="off">
         </div>
-        <div class="info-box">변경사항은 Google Sheets <code>과목목록</code> 시트에 저장됩니다.</div>
-      </div>
-      <div class="card">
-        <div class="card-title">👁️ 학생 화면 미리보기</div>
-        <div class="subject-grid" id="subj-preview"></div>
-      </div>
-    </div>
-
-    <!-- 탭 3: 학생 관리 -->
-    <div class="tab-panel" id="panel-students">
-      <div class="card">
-        <div class="card-title">🧑‍🎓 학생 목록</div>
-        <div id="stu-manage-list"><div class="loading">불러오는 중...</div></div>
-        <div class="add-row">
-          <input class="add-input" id="new-stu-name" placeholder="이름" maxlength="10" style="flex:1.2">
-          <input class="add-input" id="new-stu-no" placeholder="번호" maxlength="3" type="number" min="1" style="flex:0.6;min-width:60px">
-          <button class="add-btn" id="add-stu-btn">+ 추가</button>
+        <div class="student-list" id="individual-list">
+          <div class="loading">학생 목록 불러오는 중...</div>
         </div>
-        <div class="info-box">변경사항은 Google Sheets <code>학생목록</code> 시트에 저장되며, 학생 화면 이름 목록에 즉시 반영됩니다. 삭제 시 기록은 보존됩니다.</div>
       </div>
       <div class="card">
-        <div class="card-title">📋 등록 현황</div>
-        <div style="font-size:13px;color:var(--muted)">총 <strong id="stu-count" style="color:var(--text)">0</strong>명 등록됨</div>
+        <div class="card-title">개별 현황</div>
+        <div id="individual-detail">
+          <div class="empty-state">학생을 선택하면 개별 학습 현황이 표시됩니다.</div>
+        </div>
       </div>
     </div>
-
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ============================================================
-// ★ 설정값 — 배포 전 반드시 수정하세요
-// ============================================================
-const SCRIPT_URL  = 'https://script.google.com/macros/s/AKfycbyhVex-Mhpqza8RwWJ3ZhbVBuBW0afyckgTgMlfZVQvZbzWbYlR8So4dzKNqQKaAsd3cw/exec'; // Apps Script 웹앱 URL
-const TEACHER_PW  = '1203';                        // 교사 비밀번호
-const EXAM_DATE   = '2026-07-01';                  // 시험 날짜
-// ============================================================
-
+const SCRIPT_URL  = 'https://script.google.com/macros/s/AKfycbyhVex-Mhpqza8RwWJ3ZhbVBuBW0afyckgTgMlfZVQvZbzWbYlR8So4dzKNqQKaAsd3cw/exec';
+const TEACHER_PW  = '1203';
+const EXAM_DATE   = '2026-07-01';
 const COLORS = ['#378ADD','#1D9E75','#7F77DD','#D85A30','#BA7517','#D4537E','#639922','#185FA5'];
-let subjects = [], students = [], editingSubjName = null, editingStuNo = null;
 
-// ── 비밀번호 ─────────────────────────────────────────────────
+let dashboardData = null;
+let studentStats = [];
+let selectedStudentName = '';
+let detailRequestId = 0;
+let appInitialized = false;
+
 function checkPassword() {
   const val = document.getElementById('pw-input').value;
   if (val === TEACHER_PW) {
     document.getElementById('lock-screen').style.display = 'none';
-    document.getElementById('app-body').style.display   = 'block';
+    document.getElementById('app-body').style.display = 'block';
     sessionStorage.setItem('teacher_auth', '1');
     initApp();
   } else {
@@ -229,253 +222,346 @@ function checkPassword() {
 function logout() {
   sessionStorage.removeItem('teacher_auth');
   document.getElementById('lock-screen').style.display = 'flex';
-  document.getElementById('app-body').style.display   = 'none';
+  document.getElementById('app-body').style.display = 'none';
   document.getElementById('pw-input').value = '';
   document.getElementById('lock-error').style.display = 'none';
 }
 
-// ── 초기화 ──────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  // 세션 유지 (새로고침 시 재입력 불필요)
   if (sessionStorage.getItem('teacher_auth') === '1') {
     document.getElementById('lock-screen').style.display = 'none';
-    document.getElementById('app-body').style.display   = 'block';
+    document.getElementById('app-body').style.display = 'block';
     initApp();
   }
-  document.getElementById('pw-input').addEventListener('keydown', e => { if(e.key==='Enter') checkPassword(); });
+  document.getElementById('pw-input').addEventListener('keydown', e => { if(e.key === 'Enter') checkPassword(); });
 });
 
 function initApp() {
   updateDday();
-  document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
-  document.getElementById('add-subj-btn').addEventListener('click', addSubject);
-  document.getElementById('new-subj').addEventListener('keydown', e => { if(e.key==='Enter') addSubject(); });
-  document.getElementById('add-stu-btn').addEventListener('click', addStudent);
-  document.getElementById('new-stu-name').addEventListener('keydown', e => { if(e.key==='Enter') addStudent(); });
-  loadSubjects();
-  loadStudents();
+  if (!appInitialized) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+    document.getElementById('student-search').addEventListener('input', renderIndividualList);
+    appInitialized = true;
+  }
   loadDashboard();
 }
 
 function updateDday() {
   const diff = Math.ceil((new Date(EXAM_DATE) - new Date()) / 86400000);
   const el = document.getElementById('dday-badge');
-  if (el) el.textContent = diff > 0 ? `D-${diff}` : diff===0 ? 'D-Day!' : '시험 종료';
+  if (el) el.textContent = diff > 0 ? `D-${diff}` : diff === 0 ? 'D-Day!' : '시험 종료';
 }
 
 function switchTab(name) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===name));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id==='panel-'+name));
-  if (name==='dashboard') loadDashboard();
-  if (name==='subjects')  { loadSubjects(); }
-  if (name==='students')  renderStudentManage();
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + name));
+  if (name === 'overview') loadDashboard();
+  if (name === 'individual') {
+    renderIndividualList();
+    if (!selectedStudentName && studentStats.length) selectStudent(studentStats[0].name);
+  }
 }
 
-// ── 대시보드 ─────────────────────────────────────────────────
 async function loadDashboard() {
   if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
-    return renderDashboard({submittedCount:4,notSubmittedCount:2,todayAvgHours:3.2,
+    const demo = {
+      ok:true, submittedCount:4, notSubmittedCount:2, todayAvgHours:3.2,
       notSubmitted:['오예린','신태양'],
       studentStats:[
         {name:'김민준',totalHours:22.5,submittedToday:true},{name:'이서연',totalHours:18.5,submittedToday:true},
         {name:'박지호',totalHours:16.0,submittedToday:true},{name:'최유진',totalHours:14.5,submittedToday:true},
         {name:'정수아',totalHours:9.0,submittedToday:false},{name:'한도윤',totalHours:7.5,submittedToday:false}],
       subjectStats:[{name:'수학',hours:32,pct:100},{name:'통합과학',hours:28,pct:88},
-        {name:'영어',hours:24,pct:75},{name:'국어',hours:20,pct:63},{name:'한국사',hours:14,pct:44}]});
+        {name:'영어',hours:24,pct:75},{name:'국어',hours:20,pct:63},{name:'한국사',hours:14,pct:44}]
+    };
+    return applyDashboardData(demo);
   }
-  try { const r=await fetch(SCRIPT_URL+'?action=dashboard'); const d=await r.json(); if(d.ok) renderDashboard(d); }
-  catch(e) { showToast('대시보드 로드 실패'); }
+  try {
+    const r = await fetch(SCRIPT_URL + '?action=dashboard');
+    const d = await r.json();
+    if (d.ok) applyDashboardData(d);
+  } catch(e) {
+    showToast('전체 현황 로드 실패');
+  }
 }
 
-function renderDashboard(d) {
+function applyDashboardData(d) {
+  dashboardData = normalizeDashboard(d);
+  studentStats = [...dashboardData.studentStats].sort((a,b) => (b.totalHours || 0) - (a.totalHours || 0));
+  if (!studentStats.some(s => s.name === selectedStudentName)) {
+    selectedStudentName = studentStats[0]?.name || '';
+  }
+  renderOverview(dashboardData);
+  renderIndividualList();
+  if (document.getElementById('panel-individual').classList.contains('active') && selectedStudentName) {
+    selectStudent(selectedStudentName);
+  }
+}
+
+function normalizeDashboard(d) {
+  const students = Array.isArray(d.studentStats) ? d.studentStats : [];
+  const subjects = Array.isArray(d.subjectStats) ? d.subjectStats : [];
+  const notSubmitted = Array.isArray(d.notSubmitted) ? d.notSubmitted : [];
+  return {
+    submittedCount: numberOrDash(d.submittedCount),
+    notSubmittedCount: numberOrDash(d.notSubmittedCount),
+    todayAvgHours: numberOrDash(d.todayAvgHours),
+    notSubmitted,
+    studentStats: students.map(s => ({
+      name: String(s.name || ''),
+      totalHours: Number(s.totalHours || 0),
+      submittedToday: Boolean(s.submittedToday)
+    })).filter(s => s.name),
+    subjectStats: subjects.map(s => ({
+      name: String(s.name || ''),
+      hours: Number(s.hours || 0),
+      pct: Number(s.pct || 0)
+    })).filter(s => s.name)
+  };
+}
+
+function renderOverview(d) {
   document.getElementById('t-submitted').textContent = d.submittedCount;
-  document.getElementById('t-missing').textContent   = d.notSubmittedCount;
-  document.getElementById('t-avg').textContent       = d.todayAvgHours;
-  const maxH = Math.max(...d.studentStats.map(s=>s.totalHours),1);
-  document.getElementById('teacher-students').innerHTML = d.studentStats.map(s => {
-    const pct = Math.round(s.totalHours/maxH*100);
-    const badge = s.totalHours>=20
-      ? `<span class="badge" style="background:var(--green-l);color:var(--green-d)">우수</span>`
-      : s.totalHours>=12 ? `<span class="badge" style="background:var(--blue-l);color:#0C447C">양호</span>`
-      : s.totalHours>=6  ? `<span class="badge" style="background:var(--amber-l);color:var(--amber)">관심</span>`
-      : `<span class="badge" style="background:var(--red-l);color:var(--red)">주목</span>`;
-    return `<div class="stu-row">
-      <div class="stu-dot" style="background:${s.submittedToday?'#1D9E75':'#E24B4A'}"></div>
-      <div class="stu-name">${s.name}</div>
-      <div class="stu-bar"><div class="stu-bar-fill" style="width:${pct}%"></div></div>
-      <div class="stu-hours">${s.totalHours}h</div>${badge}</div>`;
-  }).join('');
-  document.getElementById('teacher-subjects').innerHTML = d.subjectStats.map((s,i)=>`
-    <div class="bar-row"><div class="bar-label">${s.name}</div>
-    <div class="bar-track"><div class="bar-fill" style="width:${s.pct}%;background:${COLORS[i%COLORS.length]}"></div></div>
-    <div class="bar-val">${s.hours}h</div></div>`).join('');
-  document.getElementById('teacher-missing').textContent =
-    d.notSubmitted?.length ? d.notSubmitted.join(', ') : '모두 제출 완료 ✅';
-}
+  document.getElementById('t-missing').textContent = d.notSubmittedCount;
+  document.getElementById('t-avg').textContent = d.todayAvgHours;
 
-// ── 과목 관리 ────────────────────────────────────────────────
-async function loadSubjects() {
-  if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
-    subjects = ['통합과학','수학','영어','국어','한국사','사회'].map((n,i)=>({order:i+1,name:n}));
+  const studentsEl = document.getElementById('overview-students');
+  if (!d.studentStats.length) {
+    studentsEl.innerHTML = '<div class="empty-state">아직 학생 기록이 없습니다.</div>';
   } else {
-    try { const r=await fetch(SCRIPT_URL+'?action=subjects'); const d=await r.json(); if(d.ok) subjects=d.subjects; } catch(e) {}
+    const maxH = Math.max(...d.studentStats.map(s => s.totalHours), 1);
+    studentsEl.innerHTML = d.studentStats.map(s => {
+      const pct = Math.round(s.totalHours / maxH * 100);
+      return `<div class="stu-row">
+        <div class="stu-dot" style="background:${s.submittedToday ? '#1D9E75' : '#E24B4A'}"></div>
+        <div class="stu-name" title="${escapeAttr(s.name)}">${escapeHTML(s.name)}</div>
+        <div class="stu-bar"><div class="stu-bar-fill" style="width:${pct}%"></div></div>
+        <div class="stu-hours">${formatHours(s.totalHours)}h</div>
+        ${levelBadge(s.totalHours)}
+      </div>`;
+    }).join('');
   }
-  renderSubjectList(); renderSubjectPreview();
+
+  const subjectsEl = document.getElementById('overview-subjects');
+  if (!d.subjectStats.length) {
+    subjectsEl.innerHTML = '<div class="empty-state">아직 과목별 기록이 없습니다.</div>';
+  } else {
+    subjectsEl.innerHTML = d.subjectStats.map((s,i) => `
+      <div class="bar-row">
+        <div class="bar-label" title="${escapeAttr(s.name)}">${escapeHTML(s.name)}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.min(s.pct, 100)}%;background:${COLORS[i % COLORS.length]}"></div></div>
+        <div class="bar-val">${formatHours(s.hours)}h</div>
+      </div>`).join('');
+  }
+
+  document.getElementById('overview-missing').textContent =
+    d.notSubmitted.length ? d.notSubmitted.join(', ') : '모두 제출 완료';
 }
 
-function renderSubjectList() {
-  const list = document.getElementById('subj-list');
-  if (!list) return;
-  list.innerHTML = '';
-  subjects.forEach((s,idx) => {
-    const color = COLORS[idx%COLORS.length];
-    const row = document.createElement('div');
-    row.className = 'subj-row';
-    if (editingSubjName === s.name) {
-      row.innerHTML = `<div class="subj-dot" style="background:${color}"></div>
-        <input class="subj-input" id="edit-subj-inp" value="${s.name}" maxlength="10">
-        <button class="btn-icon confirm" onclick="confirmEditSubject('${s.name}')">✓</button>
-        <button class="btn-icon" onclick="cancelEditSubject()">✕</button>`;
-      list.appendChild(row);
-      setTimeout(()=>{ const i=document.getElementById('edit-subj-inp'); if(i){i.focus();i.select();} },50);
-      document.getElementById('edit-subj-inp').addEventListener('keydown',e=>{
-        if(e.key==='Enter') confirmEditSubject(s.name); if(e.key==='Escape') cancelEditSubject();
-      });
-    } else {
-      row.innerHTML = `<div class="subj-dot" style="background:${color}"></div>
-        <span class="subj-name">${s.name}</span>
-        <button class="btn-icon" onclick="startEditSubject('${s.name}')">✏️</button>
-        <button class="btn-icon danger" onclick="deleteSubject('${s.name}')">🗑️</button>`;
-      list.appendChild(row);
-    }
+function renderIndividualList() {
+  const list = document.getElementById('individual-list');
+  const searchEl = document.getElementById('student-search');
+  const query = (searchEl?.value || '').trim().toLowerCase();
+  const filtered = studentStats.filter(s => s.name.toLowerCase().includes(query));
+
+  if (!studentStats.length) {
+    list.innerHTML = '<div class="empty-state">학생 현황을 불러오지 못했습니다.</div>';
+    return;
+  }
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state">검색 결과가 없습니다.</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(s => `
+    <button class="student-card ${s.name === selectedStudentName ? 'active' : ''}" data-name="${escapeAttr(s.name)}" type="button">
+      <span class="student-card-main">
+        <span class="status-dot" style="background:${s.submittedToday ? '#1D9E75' : '#E24B4A'}"></span>
+        <span class="student-card-name">${escapeHTML(s.name)}</span>
+      </span>
+      <span class="student-card-meta">
+        <span>${formatHours(s.totalHours)}h</span>
+        <span>${getStudentRank(s.name)}위</span>
+      </span>
+    </button>`).join('');
+
+  list.querySelectorAll('.student-card').forEach(btn => {
+    btn.addEventListener('click', () => selectStudent(btn.dataset.name));
   });
 }
 
-function renderSubjectPreview() {
-  const el = document.getElementById('subj-preview');
-  if (!el) return;
-  el.innerHTML = '';
-  subjects.forEach(s => { const c=document.createElement('div'); c.className='chip-preview'; c.textContent=s.name; el.appendChild(c); });
+async function selectStudent(name) {
+  selectedStudentName = name;
+  renderIndividualList();
+  const stat = studentStats.find(s => s.name === name) || {name, totalHours:0, submittedToday:false};
+  const requestId = ++detailRequestId;
+  document.getElementById('individual-detail').innerHTML = '<div class="loading">개별 현황 불러오는 중...</div>';
+  const data = await loadStudentDetail(name);
+  if (requestId !== detailRequestId) return;
+  renderStudentDetail(stat, data);
 }
 
-function startEditSubject(name)  { editingSubjName=name; renderSubjectList(); }
-function cancelEditSubject()     { editingSubjName=null; renderSubjectList(); }
+async function loadStudentDetail(name) {
+  if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return buildDemoStudentDetail(name);
+  try {
+    const r = await fetch(`${SCRIPT_URL}?action=mydata&name=${encodeURIComponent(name)}`);
+    const d = await r.json();
+    if (d.ok) return normalizeStudentDetail(d);
+  } catch(e) {}
+  showToast('개별 현황 로드 실패');
+  return null;
+}
 
-async function confirmEditSubject(oldName) {
-  const inp = document.getElementById('edit-subj-inp');
-  if (!inp) return;
-  const newName = inp.value.trim();
-  if (!newName) return;
-  if (SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
-    try { await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({type:'editSubject',oldName,newName})}); } catch(e) {}
+function renderStudentDetail(stat, data) {
+  const el = document.getElementById('individual-detail');
+  if (!data) {
+    el.innerHTML = '<div class="empty-state">개별 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.</div>';
+    return;
   }
-  subjects = subjects.map(s => s.name===oldName ? {...s,name:newName} : s);
-  editingSubjName = null; renderSubjectList(); renderSubjectPreview();
-  showToast(`"${oldName}" → "${newName}"`);
+
+  const rank = getStudentRank(stat.name);
+  const classAvg = getClassAverage();
+  const diff = Math.round(((stat.totalHours || 0) - classAvg) * 10) / 10;
+  const diffText = diff >= 0 ? `반 평균보다 ${formatHours(diff)}h 많음` : `반 평균보다 ${formatHours(Math.abs(diff))}h 적음`;
+  const subjectHTML = renderSubjectBars(data.subjectHours || []);
+  const trendHTML = renderTrend(data.recent7 || []);
+
+  el.innerHTML = `
+    <div class="detail-head">
+      <div>
+        <div class="detail-label">선택 학생</div>
+        <div class="detail-name">${escapeHTML(stat.name)}</div>
+      </div>
+      <span class="status-pill ${stat.submittedToday ? 'done' : 'missing'}">
+        <span class="status-dot" style="background:${stat.submittedToday ? '#1D9E75' : '#E24B4A'}"></span>
+        ${stat.submittedToday ? '오늘 제출 완료' : '오늘 미입력'}
+      </span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric"><div class="metric-label">누적 학습</div><div class="metric-val">${formatHours(data.totalHours)}</div><div class="metric-unit">h</div></div>
+      <div class="metric"><div class="metric-label">연속 기록</div><div class="metric-val">${data.streak || 0}</div><div class="metric-unit">일</div></div>
+      <div class="metric"><div class="metric-label">평균 이해도</div><div class="metric-val">${data.avgUnderstanding || '--'}</div><div class="metric-unit">/ 5</div></div>
+    </div>
+    <div class="detail-note">전체 ${rank}위 · 반 평균 ${formatHours(classAvg)}h · ${diffText}</div>
+    <div class="mini-title">과목별 누적 학습</div>
+    ${subjectHTML}
+    <div class="mini-title">최근 7일 추이</div>
+    ${trendHTML}
+  `;
 }
 
-async function addSubject() {
-  const inp = document.getElementById('new-subj');
-  const name = inp.value.trim();
-  if (!name) return;
-  if (subjects.find(s=>s.name===name)) { showToast('이미 있는 과목이에요'); return; }
-  if (SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
-    try { await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({type:'addSubject',name})}); } catch(e) {}
+function renderSubjectBars(subjectHours) {
+  if (!subjectHours.length) {
+    return '<div class="empty-state">아직 과목별 기록이 없습니다.</div>';
   }
-  subjects.push({order:subjects.length+1,name}); inp.value='';
-  renderSubjectList(); renderSubjectPreview(); showToast(`"${name}" 추가 완료`);
+  const maxH = Math.max(...subjectHours.map(s => s.hours), 1);
+  return subjectHours.map((s,i) => `
+    <div class="bar-row">
+      <div class="bar-label" title="${escapeAttr(s.name)}">${escapeHTML(s.name)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(s.hours / maxH * 100)}%;background:${COLORS[i % COLORS.length]}"></div></div>
+      <div class="bar-val">${formatHours(s.hours)}h</div>
+    </div>`).join('');
 }
 
-async function deleteSubject(name) {
-  if (!confirm(`"${name}"을(를) 삭제할까요?`)) return;
-  if (SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
-    try { await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({type:'deleteSubject',name})}); } catch(e) {}
-  }
-  subjects = subjects.filter(s=>s.name!==name);
-  renderSubjectList(); renderSubjectPreview(); showToast(`"${name}" 삭제 완료`);
+function renderTrend(recent7) {
+  const days = ['월','화','수','목','금','토','일'];
+  const rows = recent7.length ? recent7 : days.map(() => ({hours:0}));
+  const maxT = Math.max(...rows.map(r => Number(r.hours || 0)), 1);
+  return `<div class="trend">${rows.slice(0, 7).map((r,i) => {
+    const hours = Number(r.hours || 0);
+    const height = hours > 0 ? Math.max(Math.round(hours / maxT * 100), 4) : 3;
+    const opacity = hours > 0 ? 0.5 + hours / maxT * 0.5 : 0.15;
+    const label = getTrendLabel(r, i);
+    return `<div class="trend-col">
+      <div class="trend-bar-wrap"><div class="trend-bar" title="${formatHours(hours)}h" style="height:${height}%;opacity:${opacity}"></div></div>
+      <div class="trend-date">${label}</div>
+    </div>`;
+  }).join('')}</div>`;
 }
 
-// ── 학생 관리 ────────────────────────────────────────────────
-async function loadStudents() {
-  if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
-    students = ['김민준','이서연','박지호','최유진','정수아','한도윤'];
-  } else {
-    try { const r=await fetch(SCRIPT_URL+'?action=students'); const d=await r.json(); if(d.ok) students=d.students.map(s=>s.name); } catch(e) {}
-  }
-  renderStudentManage();
+function normalizeStudentDetail(d) {
+  return {
+    totalHours: Number(d.totalHours || 0),
+    streak: Number(d.streak || 0),
+    avgUnderstanding: d.avgUnderstanding || 0,
+    subjectHours: Array.isArray(d.subjectHours)
+      ? d.subjectHours.map(s => ({name:String(s.name || ''), hours:Number(s.hours || 0)})).filter(s => s.name)
+      : [],
+    recent7: Array.isArray(d.recent7)
+      ? d.recent7.map(r => ({date:r.date || '', hours:Number(r.hours || 0)}))
+      : []
+  };
 }
 
-function renderStudentManage() {
-  const list=document.getElementById('stu-manage-list');
-  const cnt=document.getElementById('stu-count');
-  if (!list) return;
-  if (cnt) cnt.textContent = students.length;
-  if (!students.length) { list.innerHTML='<div class="loading">등록된 학생이 없어요</div>'; return; }
-  list.innerHTML='';
-  students.forEach((name,idx)=>{
-    const no=idx+1;
-    const row=document.createElement('div');
-    row.className='subj-row';
-    if (editingStuNo===no) {
-      row.innerHTML=`<span style="font-size:12px;color:var(--muted);width:22px;text-align:right;flex-shrink:0">${no}</span>
-        <input class="subj-input" id="edit-stu-inp" value="${name}" maxlength="10">
-        <button class="btn-icon confirm" onclick="confirmEditStudent(${no},'${name}')">✓</button>
-        <button class="btn-icon" onclick="cancelEditStudent()">✕</button>`;
-      list.appendChild(row);
-      setTimeout(()=>{ const i=document.getElementById('edit-stu-inp'); if(i){i.focus();i.select();} },50);
-      document.getElementById('edit-stu-inp').addEventListener('keydown',e=>{
-        if(e.key==='Enter') confirmEditStudent(no,name); if(e.key==='Escape') cancelEditStudent();
-      });
-    } else {
-      row.innerHTML=`<span style="font-size:12px;color:var(--muted);width:22px;text-align:right;flex-shrink:0">${no}</span>
-        <span class="subj-name">${name}</span>
-        <button class="btn-icon" onclick="startEditStudent(${no})">✏️</button>
-        <button class="btn-icon danger" onclick="deleteStudent('${name}')">🗑️</button>`;
-      list.appendChild(row);
-    }
+function buildDemoStudentDetail(name) {
+  const stat = studentStats.find(s => s.name === name) || {totalHours:0};
+  const base = Math.max(stat.totalHours, 1);
+  return normalizeStudentDetail({
+    totalHours: base,
+    streak: stat.submittedToday ? 4 : 0,
+    avgUnderstanding: stat.submittedToday ? 4.1 : 3.2,
+    subjectHours: [
+      {name:'수학', hours:Math.round(base * 0.35 * 10) / 10},
+      {name:'통합과학', hours:Math.round(base * 0.25 * 10) / 10},
+      {name:'영어', hours:Math.round(base * 0.2 * 10) / 10},
+      {name:'국어', hours:Math.round(base * 0.12 * 10) / 10},
+      {name:'한국사', hours:Math.round(base * 0.08 * 10) / 10}
+    ],
+    recent7: [0.5,1.2,0,2.1,1.4,0.8,1.7].map(hours => ({hours}))
   });
 }
 
-function startEditStudent(no)  { editingStuNo=no; renderStudentManage(); }
-function cancelEditStudent()   { editingStuNo=null; renderStudentManage(); }
-
-async function confirmEditStudent(no,oldName) {
-  const inp=document.getElementById('edit-stu-inp');
-  if (!inp) return;
-  const newName=inp.value.trim(); if (!newName) return;
-  if (SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
-    try { await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({type:'editStudent',oldName,newName})}); } catch(e) {}
-  }
-  const i=students.indexOf(oldName); if(i!==-1) students[i]=newName;
-  editingStuNo=null; renderStudentManage(); showToast(`"${oldName}" → "${newName}" 변경 완료`);
+function levelBadge(totalHours) {
+  if (totalHours >= 20) return '<span class="badge" style="background:var(--green-l);color:var(--green-d)">우수</span>';
+  if (totalHours >= 12) return '<span class="badge" style="background:var(--blue-l);color:#0C447C">양호</span>';
+  if (totalHours >= 6) return '<span class="badge" style="background:var(--amber-l);color:var(--amber)">관심</span>';
+  return '<span class="badge" style="background:var(--red-l);color:var(--red)">주목</span>';
 }
 
-async function addStudent() {
-  const nameInp=document.getElementById('new-stu-name'), noInp=document.getElementById('new-stu-no');
-  const name=nameInp.value.trim();
-  if (!name) { showToast('이름을 입력해주세요'); return; }
-  if (students.includes(name)) { showToast('이미 등록된 학생이에요'); return; }
-  const no=noInp.value ? parseInt(noInp.value) : students.length+1;
-  if (SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
-    try { await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({type:'addStudent',name,no})}); } catch(e) {}
-  }
-  students.splice(no-1,0,name); nameInp.value=''; noInp.value='';
-  renderStudentManage(); showToast(`"${name}" 추가 완료`);
+function getStudentRank(name) {
+  const idx = studentStats.findIndex(s => s.name === name);
+  return idx === -1 ? '-' : idx + 1;
 }
 
-async function deleteStudent(name) {
-  if (!confirm(`"${name}"을(를) 삭제할까요?\n학습 기록은 Sheets에 보존됩니다.`)) return;
-  if (SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
-    try { await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({type:'deleteStudent',name})}); } catch(e) {}
-  }
-  students=students.filter(n=>n!==name); renderStudentManage(); showToast(`"${name}" 삭제 완료`);
+function getClassAverage() {
+  if (!studentStats.length) return 0;
+  const total = studentStats.reduce((sum, s) => sum + (s.totalHours || 0), 0);
+  return Math.round(total / studentStats.length * 10) / 10;
 }
 
-// ── 토스트 ───────────────────────────────────────────────────
+function formatHours(value) {
+  const n = Number(value || 0);
+  if (!Number.isFinite(n)) return '0';
+  return Number.isInteger(n) ? String(n) : n.toFixed(1);
+}
+
+function getTrendLabel(row, index) {
+  if (row?.date) {
+    const d = new Date(row.date);
+    if (!Number.isNaN(d.getTime())) return `${d.getMonth() + 1}/${d.getDate()}`;
+  }
+  return ['월','화','수','목','금','토','일'][index] || '';
+}
+
+function numberOrDash(value) {
+  return value === undefined || value === null || value === '' ? '--' : value;
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[ch]));
+}
+
+function escapeAttr(value) {
+  return escapeHTML(value);
+}
+
 function showToast(msg) {
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),2500);
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
 }
 </script>
 </body>
