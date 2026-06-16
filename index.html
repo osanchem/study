@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학습량 기록 — 오산고 1학년</title>
+<style>
+  :root {
+    --blue:#185FA5; --blue-l:#E6F1FB; --blue-m:#378ADD;
+    --green:#1D9E75; --green-l:#EAF3DE; --green-d:#27500A;
+    --amber:#BA7517; --amber-l:#FAEEDA;
+    --red:#A32D2D; --red-l:#FCEBEB;
+    --bg:#f8f8f6; --surface:#fff; --border:#e0dfd8;
+    --text:#1a1a18; --muted:#6b6a65;
+    --radius:10px; --radius-sm:6px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Pretendard','Apple SD Gothic Neo',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+  .header { background:var(--surface); border-bottom:1px solid var(--border); padding:14px 16px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
+  .header-title { font-size:16px; font-weight:600; }
+  .header-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+  .dday-badge { background:var(--red-l); color:var(--red); font-size:12px; font-weight:600; padding:4px 10px; border-radius:20px; }
+
+  .tab-wrap { background:var(--surface); border-bottom:1px solid var(--border); display:flex; }
+  .tab-btn { flex:1; padding:12px 8px; border:none; background:none; font-size:12px; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; transition:all .15s; font-family:inherit; }
+  .tab-btn.active { color:var(--blue); border-bottom-color:var(--blue); font-weight:600; }
+
+  .content { max-width:520px; margin:0 auto; padding:16px; }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:12px; }
+  .card-title { font-size:14px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+  .form-control { width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:14px; background:var(--surface); color:var(--text); font-family:inherit; outline:none; transition:border .15s; }
+  .form-control:focus { border-color:var(--blue-m); }
+  .form-control.error { border-color:var(--red); background:var(--red-l); }
+
+  /* 과목 칩 그리드 */
+  .subject-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .chip { padding:9px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:13px; text-align:center; cursor:pointer; color:var(--muted); background:var(--surface); transition:all .15s; user-select:none; font-weight:500; }
+  .chip:hover { border-color:var(--blue-m); color:var(--blue); }
+  .chip.active { background:var(--blue); border-color:var(--blue); color:#fff; font-weight:600; }
+  .chip.done { background:var(--green-l); border-color:var(--green); color:var(--green-d); font-weight:600; }
+  .chip.done::after { content:'✓'; margin-left:4px; }
+
+  /* 과목별 입력 패널 */
+  .subj-panel { display:none; background:var(--blue-l); border:1.5px solid var(--blue-m); border-radius:var(--radius); padding:14px; margin-top:10px; }
+  .subj-panel.open { display:block; }
+  .subj-panel-title { font-size:13px; font-weight:700; color:var(--blue); margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+
+  /* 슬라이더 */
+  .range-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  .range-row input[type=range] { flex:1; accent-color:var(--blue-m); }
+  .range-val { font-size:14px; font-weight:700; color:var(--blue); min-width:44px; text-align:right; }
+
+  /* 메모 */
+  .memo-label { font-size:12px; color:var(--blue); font-weight:600; margin-bottom:5px; display:flex; align-items:center; gap:4px; }
+  .required-dot { color:var(--red); font-size:14px; line-height:1; }
+  .memo-input { width:100%; padding:8px 10px; border:1px solid #b5d0ee; border-radius:var(--radius-sm); font-size:13px; font-family:inherit; background:#fff; color:var(--text); outline:none; resize:none; transition:border .15s; }
+  .memo-input:focus { border-color:var(--blue-m); }
+  .memo-input.error { border-color:var(--red); background:var(--red-l); }
+  .memo-error { font-size:11px; color:var(--red); margin-top:4px; display:none; }
+  .memo-error.show { display:block; }
+
+  /* 별점 */
+  .star-row { display:flex; gap:5px; margin-top:10px; }
+  .star { font-size:24px; cursor:pointer; color:#ddd; transition:color .1s; }
+  .star.on { color:#EF9F27; }
+  .star-label { font-size:11px; color:var(--muted); margin-top:3px; }
+
+  /* 추가 버튼 */
+  .add-subj-btn { width:100%; margin-top:10px; padding:9px; background:#fff; border:1px dashed var(--blue-m); border-radius:var(--radius-sm); color:var(--blue); font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:all .15s; }
+  .add-subj-btn:hover { background:var(--blue-l); }
+
+  /* 추가된 과목 목록 */
+  .added-list { margin-top:10px; display:flex; flex-direction:column; gap:6px; }
+  .added-item { display:flex; align-items:center; gap:8px; background:var(--green-l); border:1px solid #9FD57A; border-radius:var(--radius-sm); padding:8px 10px; font-size:13px; }
+  .added-item-name { font-weight:700; color:var(--green-d); min-width:56px; }
+  .added-item-info { flex:1; color:var(--green-d); font-size:12px; line-height:1.4; }
+  .added-item-del { background:none; border:none; cursor:pointer; color:#888; font-size:16px; padding:0 2px; line-height:1; flex-shrink:0; }
+  .added-item-del:hover { color:var(--red); }
+
+  /* 버튼 */
+  .btn { padding:12px 16px; border:none; border-radius:var(--radius-sm); font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; transition:all .15s; width:100%; }
+  .btn-primary { background:var(--blue); color:#fff; }
+  .btn-primary:hover { background:#0C447C; }
+  .btn-primary:disabled { background:var(--border); color:var(--muted); cursor:not-allowed; }
+
+  /* 내 현황 */
+  .metric-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+  .metric { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:12px; text-align:center; }
+  .metric-label { font-size:11px; color:var(--muted); margin-bottom:4px; }
+  .metric-val { font-size:22px; font-weight:700; }
+  .metric-unit { font-size:11px; color:var(--muted); }
+  .bar-row { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+  .bar-label { font-size:12px; color:var(--muted); width:65px; text-align:right; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .bar-track { flex:1; height:8px; background:var(--bg); border-radius:4px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:4px; transition:width .5s ease; }
+  .bar-val { font-size:11px; color:var(--muted); width:38px; text-align:right; }
+  .trend-wrap { display:flex; gap:4px; align-items:flex-end; height:64px; }
+  .trend-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; }
+  .trend-bar { width:100%; border-radius:3px 3px 0 0; min-height:3px; background:var(--blue-m); }
+  .trend-date { font-size:10px; color:var(--muted); }
+  .progress-bar { height:10px; background:var(--bg); border-radius:5px; overflow:hidden; margin:6px 0 4px; }
+  .progress-fill { height:100%; border-radius:5px; background:linear-gradient(90deg,var(--blue-m),var(--green)); transition:width .5s; }
+
+  .info-box { background:var(--blue-l); border-radius:var(--radius-sm); padding:10px 12px; font-size:12px; color:#185FA5; line-height:1.6; margin-top:10px; }
+  .loading { color:var(--muted); font-size:13px; text-align:center; padding:20px; }
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#1a1a18; color:#fff; font-size:13px; padding:10px 20px; border-radius:20px; opacity:0; transition:opacity .3s; pointer-events:none; z-index:100; white-space:nowrap; }
+  .toast.show { opacity:1; }
+
+  /* ── 학번 로그인 화면 ── */
+  .login-screen { position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:999; padding:16px; }
+  .login-box { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:32px 24px; width:100%; max-width:340px; text-align:center; box-shadow:0 4px 24px rgba(0,0,0,.06); }
+  .login-icon { font-size:44px; margin-bottom:12px; }
+  .login-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:4px; }
+  .login-sub { font-size:13px; color:var(--muted); margin-bottom:24px; line-height:1.5; }
+  .login-field { margin-bottom:12px; text-align:left; }
+  .login-label { font-size:12px; color:var(--muted); font-weight:600; margin-bottom:5px; display:block; }
+  .login-input { width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:var(--radius-sm); font-size:16px; font-family:inherit; outline:none; transition:border .15s; background:var(--surface); color:var(--text); letter-spacing:1px; text-align:center; }
+  .login-input:focus { border-color:var(--blue-m); }
+  .login-input.error { border-color:var(--red); background:var(--red-l); }
+  .login-error { font-size:12px; color:var(--red); margin-top:6px; min-height:18px; text-align:center; }
+  .login-btn { width:100%; padding:13px; background:var(--blue); color:#fff; border:none; border-radius:var(--radius-sm); font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; transition:background .15s; margin-top:4px; }
+  .login-btn:hover { background:#0C447C; }
+  .login-btn:disabled { background:var(--border); color:var(--muted); cursor:not-allowed; }
+  .login-hint { font-size:11px; color:var(--muted); margin-top:16px; line-height:1.6; }
+
+  /* 헤더 로그인 정보 */
+  .header-user { display:flex; align-items:center; gap:8px; }
+  .user-badge { font-size:12px; font-weight:600; color:var(--blue); background:var(--blue-l); padding:3px 9px; border-radius:12px; }
+  .logout-link { font-size:11px; color:var(--muted); background:none; border:none; cursor:pointer; font-family:inherit; text-decoration:underline; }
+
+  /* 앱 본체 */
+  .app-body { display:none; }
+</style>
+</head>
+<body>
+
+<!-- ── 학번 로그인 화면 ── -->
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <div class="login-icon">📚</div>
+    <div class="login-title">학습량 기록</div>
+    <div class="login-sub">오산고 1학년<br>학번과 이름을 입력해주세요</div>
+
+    <div class="login-field">
+      <label class="login-label">학번 (예: 10101)</label>
+      <input class="login-input" type="text" id="login-id"
+        placeholder="학번 입력" maxlength="6" inputmode="numeric"
+        onkeydown="if(event.key==='Enter') document.getElementById('login-name-inp').focus()">
+    </div>
+
+    <div class="login-field">
+      <label class="login-label">이름</label>
+      <input class="login-input" type="text" id="login-name-inp"
+        placeholder="이름 입력" maxlength="10"
+        onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+
+    <div class="login-error" id="login-error"></div>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">입장하기 →</button>
+
+    <div class="login-hint">
+      학번과 이름이 일치해야 입장할 수 있어요.<br>
+      모르면 담임 선생님께 문의하세요.
+    </div>
+  </div>
+</div>
+
+<!-- ── 앱 본체 ── -->
+<div class="app-body" id="app-body">
+
+<div class="header">
+  <div>
+    <div class="header-title">📚 학습량 기록</div>
+    <div class="header-sub">오산고 1학년</div>
+  </div>
+  <div class="header-user">
+    <span class="user-badge" id="header-user-badge"></span>
+    <div class="dday-badge" id="dday-badge">D-??</div>
+    <button class="logout-link" onclick="doLogout()">로그아웃</button>
+  </div>
+</div>
+
+<div class="tab-wrap">
+  <button class="tab-btn active" data-tab="input">✏️ 오늘 기록</button>
+  <button class="tab-btn" data-tab="my">📊 내 현황</button>
+</div>
+
+<div class="content">
+
+  <!-- 탭 1: 오늘 기록 -->
+  <div class="tab-panel active" id="panel-input">
+
+    <!-- 과목별 입력 -->
+    <div class="card">
+      <div class="card-title">📖 과목별 학습 기록</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6;">
+        공부한 과목을 선택하면 입력칸이 열립니다. 과목마다 <strong>공부 시간</strong>과 <strong>공부 내용 메모</strong>를 입력해주세요.
+      </div>
+
+      <!-- 과목 칩 목록 -->
+      <div class="subject-grid" id="subject-grid">
+        <div class="loading">불러오는 중...</div>
+      </div>
+
+      <!-- 현재 선택된 과목 입력 패널 -->
+      <div class="subj-panel" id="subj-panel">
+        <div class="subj-panel-title">
+          <span id="panel-subj-name">과목명</span> 입력
+        </div>
+
+        <!-- 시간 슬라이더 -->
+        <div style="font-size:12px;color:var(--blue);font-weight:600;margin-bottom:6px;">⏱️ 공부 시간</div>
+        <div class="range-row">
+          <span style="font-size:12px;color:var(--muted)">0h</span>
+          <input type="range" min="0" max="8" step="0.5" value="1" id="subj-hours-range">
+          <span style="font-size:12px;color:var(--muted)">8h</span>
+          <span class="range-val" id="subj-hours-display">1.0h</span>
+        </div>
+
+        <!-- 메모 (필수) -->
+        <div class="memo-label">
+          📝 공부한 내용 / 단원
+          <span class="required-dot">*</span>
+          <span style="font-size:11px;font-weight:400;color:var(--muted)">(필수)</span>
+        </div>
+        <textarea class="memo-input" id="subj-memo" rows="2"
+          placeholder="예: 2단원 물질의 구성 정리, 기출문제 15번까지 풀이"></textarea>
+        <div class="memo-error" id="memo-error">공부한 내용을 입력해주세요 ✏️</div>
+
+        <!-- 이해도 -->
+        <div style="font-size:12px;color:var(--blue);font-weight:600;margin-top:10px;margin-bottom:6px;">⭐ 이해도</div>
+        <div class="star-row" id="subj-stars">
+          <span class="star" data-n="1">★</span>
+          <span class="star" data-n="2">★</span>
+          <span class="star" data-n="3">★</span>
+          <span class="star" data-n="4">★</span>
+          <span class="star" data-n="5">★</span>
+        </div>
+        <div class="star-label" id="subj-star-label">클릭해서 선택</div>
+
+        <!-- 추가 버튼 -->
+        <button class="add-subj-btn" id="add-subj-entry-btn">+ 이 과목 추가하기</button>
+      </div>
+
+      <!-- 추가된 과목 목록 -->
+      <div class="added-list" id="added-list"></div>
+    </div>
+
+    <!-- 저장 버튼 -->
+    <button class="btn btn-primary" id="submit-btn">Google Sheets에 저장하기 →</button>
+    <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;">
+      과목별로 각각 저장됩니다
+    </div>
+  </div>
+
+  <!-- 탭 2: 내 현황 -->
+  <div class="tab-panel" id="panel-my">
+    <div class="metric-grid">
+      <div class="metric"><div class="metric-label">누적 학습</div><div class="metric-val" id="m-total">--</div><div class="metric-unit">시간</div></div>
+      <div class="metric"><div class="metric-label">연속 기록</div><div class="metric-val" id="m-streak">--</div><div class="metric-unit">일</div></div>
+      <div class="metric"><div class="metric-label">평균 이해도</div><div class="metric-val" id="m-avg">--</div><div class="metric-unit">/ 5</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📚 과목별 학습 시간</div>
+      <div id="my-bars"><div class="loading">데이터 불러오는 중...</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📈 최근 7일</div>
+      <div class="trend-wrap" id="my-trend"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🎯 주간 목표 (20시간)</div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>진행률</span><span id="goal-text">-- / 20h</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="goal-bar" style="width:0%"></div></div>
+      <div style="font-size:12px;color:var(--green-d);margin-top:4px" id="goal-label"></div>
+    </div>
+    <div class="info-box">기록을 제출하면 내 현황이 자동으로 업데이트됩니다.</div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+</div><!-- /app-body -->
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhVex-Mhpqza8RwWJ3ZhbVBuBW0afyckgTgMlfZVQvZbzWbYlR8So4dzKNqQKaAsd3cw/exec';
+const EXAM_DATE  = '2026-07-01';
+const COLORS = ['#378ADD','#1D9E75','#7F77DD','#D85A30','#BA7517','#D4537E','#639922','#185FA5'];
+
+// ── 앱 상태 ──────────────────────────────────────────────────
+let studentDB     = [];   // [{no:'10101', name:'김민준'}, ...]
+let currentUser   = null; // 로그인한 학생 {no, name}
+let subjects      = [];
+let currentSubj   = null;
+let subjHours     = 1.0;
+let subjStarRating = 0;
+let addedEntries  = [];
+let localEntries  = []; // 세션 내 저장 누적 (현황 반영용)
+
+// ── 초기화 ──────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadStudentDB();   // 학생 목록 먼저 로드
+
+  // 세션 복원
+  const saved = sessionStorage.getItem('student_user');
+  if (saved) {
+    try {
+      currentUser = JSON.parse(saved);
+      enterApp();
+      return;
+    } catch(e) { sessionStorage.removeItem('student_user'); }
+  }
+
+  // 로그인 화면 표시
+  document.getElementById('login-screen').style.display = 'flex';
+  setTimeout(() => document.getElementById('login-id').focus(), 100);
+});
+
+// ── 학생 DB 로드 ─────────────────────────────────────────────
+async function loadStudentDB() {
+  if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    // 데모 데이터: {학번, 이름}
+    studentDB = [
+      {no:'10101', name:'김민준'}, {no:'10102', name:'이서연'},
+      {no:'10103', name:'박지호'}, {no:'10104', name:'최유진'},
+      {no:'10105', name:'정수아'}, {no:'10106', name:'한도윤'},
+    ];
+    return;
+  }
+  try {
+    const r = await fetch(SCRIPT_URL + '?action=students');
+    const d = await r.json();
+    if (d.ok) studentDB = d.students.map(s => ({ no: String(s.no), name: s.name }));
+  } catch(e) {}
+}
+
+// ── 로그인 처리 ──────────────────────────────────────────────
+function doLogin() {
+  const inputNo   = document.getElementById('login-id').value.trim();
+  const inputName = document.getElementById('login-name-inp').value.trim();
+  const errEl     = document.getElementById('login-error');
+  const btn       = document.getElementById('login-btn');
+
+  // 입력 검증
+  if (!inputNo) {
+    showLoginError('학번을 입력해주세요');
+    document.getElementById('login-id').focus();
+    return;
+  }
+  if (!inputName) {
+    showLoginError('이름을 입력해주세요');
+    document.getElementById('login-name-inp').focus();
+    return;
+  }
+
+  // 학생 DB 조회
+  const found = studentDB.find(s => s.no === inputNo && s.name === inputName);
+  if (!found) {
+    showLoginError('학번 또는 이름이 일치하지 않아요. 담임 선생님께 문의하세요.');
+    document.getElementById('login-id').classList.add('error');
+    document.getElementById('login-name-inp').classList.add('error');
+    return;
+  }
+
+  // 로그인 성공
+  currentUser = found;
+  sessionStorage.setItem('student_user', JSON.stringify(found));
+  enterApp();
+}
+
+function showLoginError(msg) {
+  document.getElementById('login-error').textContent = msg;
+}
+
+// ── 앱 진입 ──────────────────────────────────────────────────
+function enterApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-body').style.display     = 'block';
+
+  // 헤더 배지
+  document.getElementById('header-user-badge').textContent =
+    `${currentUser.no} ${currentUser.name}`;
+
+  updateDday();
+  setupTabs();
+  setupSubjPanel();
+  document.getElementById('submit-btn').addEventListener('click', submitAll);
+  loadSubjects();
+}
+
+// ── 로그아웃 ─────────────────────────────────────────────────
+function doLogout() {
+  if (!confirm('로그아웃 하시겠어요?')) return;
+  sessionStorage.removeItem('student_user');
+  currentUser = null;
+  addedEntries = [];
+  currentSubj  = null;
+
+  // 입력 초기화
+  document.getElementById('login-id').value = '';
+  document.getElementById('login-name-inp').value = '';
+  document.getElementById('login-id').classList.remove('error');
+  document.getElementById('login-name-inp').classList.remove('error');
+  document.getElementById('login-error').textContent = '';
+
+  document.getElementById('app-body').style.display    = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  setTimeout(() => document.getElementById('login-id').focus(), 100);
+}
+
+// ── D-day ────────────────────────────────────────────────────
+function updateDday() {
+  const diff = Math.ceil((new Date(EXAM_DATE) - new Date()) / 86400000);
+  const el = document.getElementById('dday-badge');
+  el.textContent = diff > 0 ? `D-${diff}` : diff === 0 ? 'D-Day!' : '시험 종료';
+}
+
+// ── 탭 ──────────────────────────────────────────────────────
+function setupTabs() {
+  document.querySelectorAll('.tab-btn').forEach(b =>
+    b.addEventListener('click', () => switchTab(b.dataset.tab)));
+}
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + name));
+  if (name === 'my') loadMyData(); // 탭 클릭 시 항상 최신 데이터 로드
+}
+async function loadSubjects() {
+  if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    subjects = ['통합과학','수학','영어','국어','한국사','사회'].map((n,i) => ({order:i+1, name:n}));
+  } else {
+    try {
+      const r = await fetch(SCRIPT_URL + '?action=subjects');
+      const d = await r.json();
+      if (d.ok) subjects = d.subjects;
+    } catch(e) {}
+  }
+  renderSubjectChips();
+}
+
+function renderSubjectChips() {
+  const grid = document.getElementById('subject-grid');
+  grid.innerHTML = '';
+  subjects.forEach(s => {
+    const chip = document.createElement('div');
+    const entry = addedEntries.find(e => e.name === s.name);
+    chip.className = 'chip' + (entry ? ' done' : (currentSubj === s.name ? ' active' : ''));
+    chip.textContent = s.name;
+    chip.dataset.name = s.name;
+    chip.addEventListener('click', () => openPanel(s.name));
+    grid.appendChild(chip);
+  });
+}
+
+// ── 과목 패널 ────────────────────────────────────────────────
+function setupSubjPanel() {
+  document.getElementById('subj-hours-range').addEventListener('input', e => {
+    subjHours = parseFloat(e.target.value);
+    document.getElementById('subj-hours-display').textContent = subjHours.toFixed(1) + 'h';
+  });
+  document.querySelectorAll('#subj-stars .star').forEach(s =>
+    s.addEventListener('click', () => setSubjStar(+s.dataset.n)));
+  document.getElementById('add-subj-entry-btn').addEventListener('click', addEntry);
+}
+
+function openPanel(name) {
+  if (addedEntries.find(e => e.name === name)) {
+    showToast(`"${name}"은(는) 이미 추가됐어요`);
+    return;
+  }
+  currentSubj = name;
+  document.getElementById('panel-subj-name').textContent = name;
+  subjHours = 1.0;
+  document.getElementById('subj-hours-range').value = 1;
+  document.getElementById('subj-hours-display').textContent = '1.0h';
+  const memoEl = document.getElementById('subj-memo');
+  memoEl.value = '';
+  memoEl.classList.remove('error');
+  document.getElementById('memo-error').classList.remove('show');
+  subjStarRating = 0;
+  document.querySelectorAll('#subj-stars .star').forEach(s => s.classList.remove('on'));
+  document.getElementById('subj-star-label').textContent = '클릭해서 선택';
+  document.getElementById('subj-panel').classList.add('open');
+  renderSubjectChips();
+  setTimeout(() => memoEl.focus(), 200);
+}
+
+function setSubjStar(n) {
+  subjStarRating = n;
+  const labels = ['','다시 보자 😅','조금 부족해 😐','그럭저럭 🙂','잘 이해했어 😊','완벽해! 🌟'];
+  document.querySelectorAll('#subj-stars .star').forEach((s,i) => s.classList.toggle('on', i < n));
+  document.getElementById('subj-star-label').textContent = labels[n];
+}
+
+function addEntry() {
+  const memo = document.getElementById('subj-memo').value.trim();
+  if (!memo) {
+    const memoEl = document.getElementById('subj-memo');
+    memoEl.classList.add('error');
+    document.getElementById('memo-error').classList.add('show');
+    memoEl.focus();
+    return;
+  }
+  if (!subjStarRating) { showToast('이해도를 선택해주세요 ⭐'); return; }
+
+  addedEntries.push({ name: currentSubj, hours: subjHours, memo, star: subjStarRating });
+  document.getElementById('subj-panel').classList.remove('open');
+  currentSubj = null;
+  renderSubjectChips();
+  renderAddedList();
+  showToast(`"${addedEntries[addedEntries.length-1].name}" 추가 완료!`);
+}
+
+function renderAddedList() {
+  const el = document.getElementById('added-list');
+  if (!addedEntries.length) { el.innerHTML = ''; return; }
+  const starLabels = ['','😅','😐','🙂','😊','🌟'];
+  el.innerHTML = addedEntries.map((e, idx) => `
+    <div class="added-item">
+      <div class="added-item-name">${e.name}</div>
+      <div class="added-item-info">
+        ⏱ ${e.hours.toFixed(1)}h &nbsp;|&nbsp; ${starLabels[e.star]} ${e.star}점<br>
+        📝 ${e.memo}
+      </div>
+      <button class="added-item-del" onclick="removeEntry(${idx})" title="삭제">✕</button>
+    </div>`).join('');
+}
+
+function removeEntry(idx) {
+  addedEntries.splice(idx, 1);
+  renderSubjectChips();
+  renderAddedList();
+  document.getElementById('subj-panel').classList.remove('open');
+  currentSubj = null;
+}
+
+// ── 전체 저장 ────────────────────────────────────────────────
+async function submitAll() {
+  if (!addedEntries.length) { showToast('과목을 1개 이상 추가해주세요'); return; }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = `저장 중... (0/${addedEntries.length})`;
+
+  const today = new Date().toLocaleDateString('ko-KR');
+  let saved = 0;
+
+  for (const entry of addedEntries) {
+    const record = {
+      type: 'log',
+      studentNo: currentUser.no,
+      name:      currentUser.name,
+      subjects:  entry.name,
+      hours:     entry.hours,
+      memo:      entry.memo,
+      understanding: entry.star,
+      date: today
+    };
+    if (SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
+      try { await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', body: JSON.stringify(record) }); } catch(e) {}
+    }
+    saved++;
+    btn.textContent = `저장 중... (${saved}/${addedEntries.length})`;
+  }
+
+  // 로컬 누적 기록 (현황 업데이트용) — addedEntries 초기화 전에 저장
+  localEntries.push(...addedEntries);
+
+  addedEntries = []; currentSubj = null;
+  document.getElementById('subj-panel').classList.remove('open');
+  renderSubjectChips();
+  renderAddedList();
+
+  btn.disabled = false;
+  btn.textContent = 'Google Sheets에 저장하기 →';
+  showToast(`✅ ${saved}개 과목 저장 완료!`);
+
+  // 내 현황 데이터 계산 후 탭 전환 (switchTab의 loadMyData 중복 호출 방지)
+  const snapshot = buildMyDataSnapshot();
+  renderMyData(snapshot);
+  // 탭만 전환 (loadMyData 재호출 없이)
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === 'my'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-my'));
+}
+
+// ── 내 현황 스냅샷 계산 (데모: localEntries 기반) ────────────
+function buildMyDataSnapshot() {
+  const total = localEntries.reduce((s, e) => s + e.hours, 0);
+  const subjMap = {};
+  localEntries.forEach(e => {
+    subjMap[e.name] = (subjMap[e.name] || 0) + e.hours;
+  });
+  const subjectHours = Object.entries(subjMap)
+    .map(([name, hours]) => ({ name, hours: Math.round(hours * 10) / 10 }))
+    .sort((a, b) => b.hours - a.hours);
+  const avgStar = localEntries.length
+    ? Math.round(localEntries.reduce((s, e) => s + e.star, 0) / localEntries.length * 10) / 10
+    : 0;
+  const todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
+  const recent7 = [0,1,2,3,4,5,6].map(i => ({
+    hours: i === todayIdx ? Math.round(total * 10) / 10 : 0
+  }));
+  return {
+    totalHours: Math.round(total * 10) / 10,
+    streak: localEntries.length > 0 ? 1 : 0,
+    avgUnderstanding: avgStar,
+    subjectHours: subjectHours.length ? subjectHours : [],
+    recent7
+  };
+}
+
+// ── 내 현황 로드 ─────────────────────────────────────────────
+async function loadMyData() {
+  if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    // 데모: 세션 내 입력값으로 계산
+    return renderMyData(buildMyDataSnapshot());
+  }
+  // 실제 Sheets 연동
+  try {
+    const r = await fetch(`${SCRIPT_URL}?action=mydata&name=${encodeURIComponent(currentUser.name)}`);
+    const d = await r.json();
+    if (d.ok) renderMyData(d);
+  } catch(e) { showToast('현황 로드 실패'); }
+}
+
+function renderMyData(d) {
+  document.getElementById('m-total').textContent  = d.totalHours;
+  document.getElementById('m-streak').textContent = d.streak;
+  document.getElementById('m-avg').textContent    = d.avgUnderstanding || '--';
+
+  const barsEl = document.getElementById('my-bars');
+  if (!d.subjectHours || !d.subjectHours.length) {
+    barsEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0">아직 기록이 없어요</div>';
+  } else {
+    const maxH = Math.max(...d.subjectHours.map(s => s.hours), 1);
+    barsEl.innerHTML = d.subjectHours.map((s,i) => `
+      <div class="bar-row">
+        <div class="bar-label">${s.name}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(s.hours/maxH*100)}%;background:${COLORS[i%COLORS.length]}"></div></div>
+        <div class="bar-val">${s.hours}h</div>
+      </div>`).join('');
+  }
+
+  const maxT = Math.max(...(d.recent7 || []).map(r => r.hours), 1);
+  const days = ['월','화','수','목','금','토','일'];
+  document.getElementById('my-trend').innerHTML = (d.recent7 || [0,0,0,0,0,0,0].map(()=>({hours:0}))).map((r,i) => `
+    <div class="trend-col">
+      <div class="trend-bar" style="height:${r.hours > 0 ? Math.max(Math.round(r.hours/maxT*100),4) : 3}%;opacity:${r.hours > 0 ? 0.5+r.hours/maxT*0.5 : 0.15}"></div>
+      <div class="trend-date">${days[i]}</div>
+    </div>`).join('');
+
+  const goal = 20;
+  const pct = Math.min(Math.round((d.totalHours || 0) / goal * 100), 100);
+  document.getElementById('goal-text').textContent  = `${d.totalHours || 0} / ${goal}h`;
+  document.getElementById('goal-bar').style.width   = pct + '%';
+  document.getElementById('goal-label').textContent = pct > 0 ? `목표의 ${pct}% 달성 🎯` : '오늘도 화이팅!';
+}
+
+// ── 토스트 ──────────────────────────────────────────────────
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
