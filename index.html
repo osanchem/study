@@ -552,12 +552,12 @@ async function submitAll() {
   for (const entry of addedEntries) {
     const record = {
       date:      today,
+      studentNo: currentUser.no,
       name:      currentUser.name,
       subjects:  entry.name,
       hours:     entry.hours,
       memo:      entry.memo,
       understanding: entry.star,
-      studentNo: currentUser.no,
       type:      'log'
     };
     if (SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
